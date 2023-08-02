@@ -2,6 +2,7 @@ const Contact = require("./Contact")
 const InvalidName = require("./InvalidName")
 const NotFound=require("./NotFound");
 const ValidationError = require("./ValidationError");
+const Unauthorized=require("./Unauthorized")
 
 class User {
     static Id = 0;
@@ -160,11 +161,14 @@ class User {
     }
 
     getAllContact() {
-        
+        if (this.isAdmin) {
+            throw new Unauthorized("admin cannot create users contact")
+        }
         return this.contacts
     }
 
     findContact(contactId) {
+
         try {
             for (let i = 0; i < this.contacts.length; i++) {
                 if (contactId == this.contacts[i].Id) {
@@ -181,9 +185,13 @@ class User {
     }
 
     updateContact(contactId, newValue) {
+        
         try {
             if (typeof contactId != "number") {
                 throw new ValidationError("contact id is not number")
+            }
+            if (this.isAdmin) {
+                throw new Unauthorized("admin cannot create users contact")
             }
             let indexOfContact  = this.findContact(contactId)
             
@@ -204,6 +212,9 @@ class User {
             if (typeof contactId != "number") {
                 throw new ValidationError("contact id is not number")
             }
+            if (this.isAdmin) {
+                throw new Unauthorized("admin cannot create users contact")
+            }
             let indexOfContact = this.findContact(contactId)
             
             this.contacts.splice(indexOfContact, 1)
@@ -215,6 +226,9 @@ class User {
 
     createContactInfo(contactId, typeOfContact, valueOfContact) {
         try {
+            if (this.isAdmin) {
+                throw new Unauthorized("admin cannot create users contact")
+            }
             if (typeof contactId != "number") {
                 throw new ValidationError("contact id is not number")
             }
@@ -251,6 +265,9 @@ class User {
             if (typeof contactId != "number") {
                 throw new ValidationError("contact id is not number")
             }
+            if (this.isAdmin) {
+                throw new Unauthorized("admin cannot create users contact")
+            }
             let indexOfContact = this.findContact(contactId)
            
             this.contacts[indexOfContact].updateContactInfo(contactInfoId, newValue)
@@ -281,6 +298,9 @@ class User {
 
     getUserById(userId){
         try {
+            if (!this.isAdmin) {
+                throw new Unauthorized("only admin can make changes")
+            }
             if(typeof userId != "number"){
                 throw new ValidationError("userid is not number")
             }
@@ -296,6 +316,9 @@ class User {
 
     getContactById(contactId){
         try {
+            if (this.isAdmin) {
+                throw new Unauthorized("only admin can make changes")
+            }
             if(typeof contactId != "number"){
                 throw new ValidationError(" contact id is not number")
             }
@@ -311,6 +334,9 @@ class User {
 
     getContactInfoById(contactId, contactInfoId){
         try {
+            if (this.isAdmin) {
+                throw new Unauthorized("only admin can make changes")
+            }
             if(typeof contactId != "number"||typeof contactInfoId!=="number"){
                 throw new ValidationError("userid is not number")
             }
